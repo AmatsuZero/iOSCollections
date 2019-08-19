@@ -1,4 +1,10 @@
-import Foundation
+//
+//  Tilemap.swift
+//  Engine
+//
+//  Created by Nick Lockwood on 03/06/2019.
+//  Copyright © 2019 Nick Lockwood. All rights reserved.
+//
 
 public struct Tilemap: Decodable {
     private let tiles: [Tile]
@@ -10,16 +16,16 @@ public extension Tilemap {
     var height: Int {
         return tiles.count / width
     }
-    
+
     var size: Vector {
         return Vector(x: Double(width), y: Double(height))
     }
-    
+
     subscript(x: Int, y: Int) -> Tile {
         return tiles[y * width + x]
     }
-    
-    func tile(at position: Vector, from direction: Vector) -> Tile {
+
+    func tileCoords(at position: Vector, from direction: Vector) -> (x: Int, y: Int) {
         var offsetX = 0, offsetY = 0
         if position.x.rounded(.down) == position.x {
             offsetX = direction.x > 0 ? 0 : -1
@@ -27,9 +33,14 @@ public extension Tilemap {
         if position.y.rounded(.down) == position.y {
             offsetY = direction.y > 0 ? 0 : -1
         }
-        return self[Int(position.x) + offsetX, Int(position.y) + offsetY]
+        return (x: Int(position.x) + offsetX, y: Int(position.y) + offsetY)
     }
-    
+
+    func tile(at position: Vector, from direction: Vector) -> Tile {
+        let (x, y) = tileCoords(at: position, from: direction)
+        return self[x, y]
+    }
+
     func hitTest(_ ray: Ray) -> Vector {
         var position = ray.origin
         let slope = ray.direction.x / ray.direction.y

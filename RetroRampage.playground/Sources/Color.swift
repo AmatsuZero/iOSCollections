@@ -1,8 +1,14 @@
-import Foundation
+//
+//  Color.swift
+//  Engine
+//
+//  Created by Nick Lockwood on 02/06/2019.
+//  Copyright © 2019 Nick Lockwood. All rights reserved.
+//
 
 public struct Color {
     public var r, g, b, a: UInt8
-    
+
     public init(r: UInt8, g: UInt8, b: UInt8, a: UInt8 = 255) {
         self.r = r
         self.g = g
@@ -15,7 +21,7 @@ public extension Color {
     var isOpaque: Bool {
         return a == 255
     }
-    
+
     static let clear = Color(r: 0, g: 0, b: 0, a: 0)
     static let black = Color(r: 0, g: 0, b: 0)
     static let white = Color(r: 255, g: 255, b: 255)

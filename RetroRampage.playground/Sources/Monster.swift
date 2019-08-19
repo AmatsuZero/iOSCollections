@@ -1,4 +1,10 @@
-import Foundation
+//
+//  Monster.swift
+//  Engine
+//
+//  Created by Nick Lockwood on 02/06/2019.
+//  Copyright © 2019 Nick Lockwood. All rights reserved.
+//
 
 public enum MonsterState {
     case idle
@@ -18,7 +24,7 @@ public struct Monster: Actor {
     public var animation: Animation = .monsterIdle
     public let attackCooldown: Double = 0.4
     public private(set) var lastAttackTime: Double = 0
-    
+
     public init(position: Vector) {
         self.position = position
     }
@@ -28,7 +34,7 @@ public extension Monster {
     var isDead: Bool {
         return health <= 0
     }
-    
+
     mutating func update(in world: inout World) {
         switch state {
         case .idle:
@@ -73,22 +79,22 @@ public extension Monster {
             }
         }
     }
-    
+
     func canSeePlayer(in world: World) -> Bool {
         let direction = world.player.position - position
         let playerDistance = direction.length
         let ray = Ray(origin: position, direction: direction / playerDistance)
-        let wallHit = world.map.hitTest(ray)
+        let wallHit = world.hitTest(ray)
         let wallDistance = (wallHit - position).length
         return wallDistance > playerDistance
     }
-    
+
     func canReachPlayer(in world: World) -> Bool {
         let reach = 0.75
         let playerDistance = (world.player.position - position).length
         return playerDistance - world.player.radius < reach
     }
-    
+
     func billboard(for ray: Ray) -> Billboard {
         let plane = ray.direction.orthogonal
         return Billboard(
@@ -98,7 +104,7 @@ public extension Monster {
             texture: animation.texture
         )
     }
-    
+
     func hitTest(_ ray: Ray) -> Vector? {
         guard isDead == false, let hit = billboard(for: ray).hitTest(ray) else {
             return nil
@@ -113,13 +119,13 @@ public extension Monster {
 public extension Animation {
     static let monsterIdle = Animation(frames: [
         .monster
-        ], duration: 0)
+    ], duration: 0)
     static let monsterWalk = Animation(frames: [
         .monsterWalk1,
         .monster,
         .monsterWalk2,
         .monster
-        ], duration: 0.5)
+    ], duration: 0.5)
     static let monsterScratch = Animation(frames: [
         .monsterScratch1,
         .monsterScratch2,
@@ -129,16 +135,16 @@ public extension Animation {
         .monsterScratch6,
         .monsterScratch7,
         .monsterScratch8,
-        ], duration: 0.8)
+    ], duration: 0.8)
     static let monsterHurt = Animation(frames: [
         .monsterHurt
-        ], duration: 0.2)
+    ], duration: 0.2)
     static let monsterDeath = Animation(frames: [
         .monsterHurt,
         .monsterDeath1,
         .monsterDeath2
-        ], duration: 0.5)
+    ], duration: 0.5)
     static let monsterDead = Animation(frames: [
         .monsterDead
-        ], duration: 0)
+    ], duration: 0)
 }

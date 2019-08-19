@@ -1,10 +1,16 @@
-import Foundation
+//
+//  Bitmap.swift
+//  Engine
+//
+//  Created by Nick Lockwood on 02/06/2019.
+//  Copyright © 2019 Nick Lockwood. All rights reserved.
+//
 
 public struct Bitmap {
     public private(set) var pixels: [Color]
     public let width, height: Int
     public let isOpaque: Bool
-    
+
     public init(height: Int, pixels: [Color]) {
         self.height = height
         self.width = pixels.count / height
@@ -21,18 +27,18 @@ public extension Bitmap {
             pixels[x * height + y] = newValue
         }
     }
-    
+
     subscript(normalized x: Double, y: Double) -> Color {
         return self[Int(x * Double(width)), Int(y * Double(height))]
     }
-    
+
     init(width: Int, height: Int, color: Color) {
         self.pixels = Array(repeating: color, count: width * height)
         self.height = height
         self.width = width
         self.isOpaque = color.isOpaque
     }
-    
+
     mutating func fill(rect: Rect, color: Color) {
         for x in Int(rect.min.x) ..< Int(rect.max.x) {
             for y in Int(rect.min.y) ..< Int(rect.max.y) {
@@ -40,7 +46,7 @@ public extension Bitmap {
             }
         }
     }
-    
+
     mutating func drawLine(from: Vector, to: Vector, color: Color) {
         let difference = to - from
         let step: Vector
@@ -60,7 +66,7 @@ public extension Bitmap {
             point += step
         }
     }
-    
+
     mutating func drawColumn(_ sourceX: Int, of source: Bitmap, at point: Vector, height: Double) {
         let start = Int(point.y), end = Int(point.y + height) + 1
         let stepY = Double(source.height) / height
@@ -79,7 +85,7 @@ public extension Bitmap {
             }
         }
     }
-    
+
     mutating func drawImage(_ source: Bitmap, at point: Vector, size: Vector) {
         let start = Int(point.x), end = Int(point.x + size.x)
         let stepX = Double(source.width) / size.x
@@ -89,7 +95,7 @@ public extension Bitmap {
             drawColumn(Int(sourceX), of: source, at: outputPosition, height: size.y)
         }
     }
-    
+
     private mutating func blendPixel(at index: Int, with newColor: Color) {
         switch newColor.a {
         case 0:
@@ -106,7 +112,7 @@ public extension Bitmap {
             )
         }
     }
-    
+
     mutating func tint(with color: Color, opacity: Double) {
         let alpha = min(1, max(0, Double(color.a) / 255 * opacity))
         let color = Color(

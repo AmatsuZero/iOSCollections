@@ -1,4 +1,10 @@
-import Foundation
+//
+//  Tile.swift
+//  Engine
+//
+//  Created by Nick Lockwood on 03/06/2019.
+//  Copyright © 2019 Nick Lockwood. All rights reserved.
+//
 
 public enum Tile: Int, Decodable {
     case floor
@@ -17,7 +23,7 @@ public extension Tile {
             return false
         }
     }
-    
+
     var textures: [Texture] {
         switch self {
         case .floor:

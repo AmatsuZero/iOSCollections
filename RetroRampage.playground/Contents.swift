@@ -96,7 +96,6 @@ class MyViewController : UIViewController {
     
     @objc func fire(_ gestureRecognizer: UITapGestureRecognizer) {
         lastFiredTime = CACurrentMediaTime()
-        print("Fire!!!!")
     }
     
     func setUpImageView() {

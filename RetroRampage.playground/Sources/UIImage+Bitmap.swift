@@ -5,13 +5,13 @@ public extension UIImage {
         let alphaInfo = CGImageAlphaInfo.premultipliedLast
         let bytesPerPixel = MemoryLayout<Color>.size
         let bytesPerRow = bitmap.height * bytesPerPixel
-        
+
         guard let providerRef = CGDataProvider(data: Data(
             bytes: bitmap.pixels, count: bitmap.width * bytesPerRow
-            ) as CFData) else {
-                return nil
+        ) as CFData) else {
+            return nil
         }
-        
+
         guard let cgImage = CGImage(
             width: bitmap.height,
             height: bitmap.width,
@@ -24,11 +24,11 @@ public extension UIImage {
             decode: nil,
             shouldInterpolate: true,
             intent: .defaultIntent
-            ) else {
-                return nil
+        ) else {
+            return nil
         }
-        
-        self.init(cgImage: cgImage, scale: 1, orientation: .left)
+
+        self.init(cgImage: cgImage, scale: 1, orientation: .leftMirrored)
     }
 }
 
@@ -37,11 +37,11 @@ public extension Bitmap {
         guard let cgImage = image.cgImage else {
             return nil
         }
-        
+
         let alphaInfo = CGImageAlphaInfo.premultipliedLast
         let bytesPerPixel = MemoryLayout<Color>.size
         let bytesPerRow = cgImage.height * bytesPerPixel
-        
+
         var pixels = [Color](repeating: .clear, count: cgImage.width * cgImage.height)
         guard let context = CGContext(
             data: &pixels,
@@ -51,14 +51,14 @@ public extension Bitmap {
             bytesPerRow: bytesPerRow,
             space: CGColorSpaceCreateDeviceRGB(),
             bitmapInfo: alphaInfo.rawValue
-            ) else {
-                return nil
+        ) else {
+            return nil
         }
-        
+
         UIGraphicsPushContext(context)
-        UIImage(cgImage: cgImage, scale: 1, orientation: .rightMirrored).draw(at: .zero)
+        UIImage(cgImage: cgImage, scale: 1, orientation: .left).draw(at: .zero)
         UIGraphicsPopContext()
-        self.init(height: cgImage.width, pixels: pixels)
+        self.init(height: cgImage.height, pixels: pixels)
     }
 }
 

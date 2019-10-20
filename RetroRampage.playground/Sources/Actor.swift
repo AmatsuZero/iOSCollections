@@ -19,25 +19,30 @@ public extension Actor {
     }
 
     func intersection(with map: Tilemap) -> Vector? {
-        let actorRect = self.rect
-        let minX = Int(actorRect.min.x), maxX = Int(actorRect.max.x)
-        let minY = Int(actorRect.min.y), maxY = Int(actorRect.max.y)
+        let minX = Int(rect.min.x), maxX = Int(rect.max.x)
+        let minY = Int(rect.min.y), maxY = Int(rect.max.y)
+        var largestIntersection: Vector?
         for y in minY ... maxY {
             for x in minX ... maxX where map[x, y].isWall {
                 let wallRect = Rect(
                     min: Vector(x: Double(x), y: Double(y)),
                     max: Vector(x: Double(x + 1), y: Double(y + 1))
                 )
-                if let intersection = actorRect.intersection(with: wallRect) {
-                    return intersection
+                if let intersection = rect.intersection(with: wallRect),
+                    intersection.length > largestIntersection?.length ?? 0 {
+                    largestIntersection = intersection
                 }
             }
         }
-        return nil
+        return largestIntersection
     }
 
     func intersection(with door: Door) -> Vector? {
         return rect.intersection(with: door.rect)
+    }
+
+    func intersection(with pushwall: Pushwall) -> Vector? {
+        return rect.intersection(with: pushwall.rect)
     }
 
     func intersection(with world: World) -> Vector? {
@@ -46,6 +51,11 @@ public extension Actor {
         }
         for door in world.doors {
             if let intersection = intersection(with: door) {
+                return intersection
+            }
+        }
+        for pushwall in world.pushwalls where pushwall.position != position {
+            if let intersection = intersection(with: pushwall) {
                 return intersection
             }
         }
@@ -65,5 +75,21 @@ public extension Actor {
             position -= intersection
             attempts -= 1
         }
+    }
+
+    func isStuck(in world: World) -> Bool {
+        // If outside map
+        if position.x < 1 || position.x > world.map.size.x - 1 ||
+            position.y < 1 || position.y > world.map.size.y - 1 {
+            return true
+        }
+        // If stuck in a wall
+        if world.map[Int(position.x), Int(position.y)].isWall {
+            return true
+        }
+        // If stuck in pushwall
+        return world.pushwalls.contains(where: {
+            abs(position.x - $0.position.x) < 0.6 && abs(position.y - $0.position.y) < 0.6
+        })
     }
 }

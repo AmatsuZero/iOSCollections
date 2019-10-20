@@ -6,6 +6,7 @@
 //  Copyright © 2019 Nick Lockwood. All rights reserved.
 //
 
+
 public enum Texture: String, CaseIterable {
     case wall, wall2
     case crackWall, crackWall2

@@ -68,7 +68,7 @@ public extension Bitmap {
     }
 
     mutating func drawColumn(_ sourceX: Int, of source: Bitmap, at point: Vector, height: Double) {
-        let start = Int(point.y), end = Int(point.y + height) + 1
+        let start = Int(point.y), end = Int((point.y + height).rounded(.up))
         let stepY = Double(source.height) / height
         let offset = Int(point.x) * self.height
         if source.isOpaque {
